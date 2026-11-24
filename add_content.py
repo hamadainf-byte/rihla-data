@@ -8,6 +8,7 @@
   python add_content.py pdf   "C:\\ملفات\\bac2025-math.pdf" --year s3 --subject math --kind exams
   python add_content.py video --year m4 --subject math --kind lessons --title "المتتاليات" --url "https://youtu.be/xxxx"
   python add_content.py notify --title "تمت إضافة بكالوريا 2025 رياضيات" --year s3 --subject math --section exams --exam-year 2025
+  python add_content.py announce        # بعد وضع الملفات: يبني الفهرس وينشئ إشعارًا تلقائيًا لكل جديد
   python add_content.py unnotify n002   # يحذف إشعارًا برقمه (مثل إشعار Drive القديم)
   python add_content.py fix-videos      # يصلح أسماء ملفات الفيديو الخاطئة (védios.txt ← videos.txt)
   python add_content.py check           # يفحص المستودع ويعرض المشاكل
@@ -281,6 +282,86 @@ def cmd_unnotify(a, root=ROOT):
         run_build(root)
 
 
+# ------------------------------------------------------------------ announce
+def _catalog_items(catalog):
+    """كل عناصر الفهرس: مفتاح فريد ← (الصف، المادة، النوع، العنصر)."""
+    out = {}
+    for sub in catalog.get("subjects", []):
+        for y, data in (sub.get("years") or {}).items():
+            for kind in ("lessons", "summaries", "exams"):
+                for it in (data or {}).get(kind) or []:
+                    vid = it.get("video") if isinstance(it.get("video"), str) else None
+                    key = "%s|%s|%s|%s" % (y, sub.get("id"), kind, it.get("url") or it.get("pdf") or vid or it.get("title"))
+                    out[key] = (y, sub.get("id"), kind, it)
+    return out
+
+
+def _announcement(year, subject, kind, items):
+    """نص إشعار لمجموعة عناصر جديدة (نفس الصف والمادة والنوع). بلا تذكير ولا تأنيث."""
+    place = "%s - %s" % (YEAR_NAMES.get(year, year), NAMES.get(subject, subject))
+    videos = [i for i in items if i.get("video")]
+    one = len(items) == 1
+    titles = " • ".join(str(i.get("title")) for i in items[:3]) + (" …" if len(items) > 3 else "")
+    if kind == "exams":
+        title = "تمت إضافة %s" % items[0].get("title") if one else "تمت إضافة %d ملفات في امتحانات وحلول %s" % (len(items), NAMES.get(subject, subject))
+    elif kind == "summaries":
+        title = ("تمت إضافة ملخص: %s" % items[0].get("title")) if one else "تمت إضافة %d ملخصات في %s" % (len(items), NAMES.get(subject, subject))
+    else:
+        title = ("تمت إضافة درس: %s" % items[0].get("title")) if one else "تمت إضافة %d دروس في %s" % (len(items), NAMES.get(subject, subject))
+    if videos and len(videos) == len(items):
+        title = title.replace("درس", "فيديو", 1).replace("ملخص", "فيديو", 1) if one else title + " (فيديوهات)"
+    target = {"subject": subject, "section": kind}
+    years = {i.get("year") for i in items if isinstance(i.get("year"), int)}
+    if kind == "exams" and len(years) == 1:
+        target["exam_year"] = years.pop()
+    return {"title": title, "body": place if one else "%s: %s" % (place, titles), "year": year, "target": target}
+
+
+def cmd_announce(a, root=ROOT):
+    """يبني الفهرس، ثم ينشئ إشعارًا تلقائيًا لكل جديد لم يُعلَن عنه، ثم يعيد البناء."""
+    root = Path(root)
+    if not getattr(a, "no_build", False):
+        run_build(root)
+    cat_f = root / "catalog.json"
+    if not cat_f.is_file():
+        raise Fail("catalog.json غير موجود. شغّل build_catalog.py أولًا.")
+    items = _catalog_items(json.loads(cat_f.read_text(encoding="utf-8-sig")))
+    state_f = root / "announced.json"
+    if getattr(a, "baseline", False) or not state_f.is_file():
+        if not getattr(a, "dry_run", False):
+            state_f.write_text(json.dumps({"keys": sorted(items)}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print("📌 سُجّل المحتوى الحالي (%d عنصرًا) كمُعلَن عنه، فلا إشعارات الآن. من الآن يُعلَن عن الجديد فقط." % len(items))
+        return
+    known = set(json.loads(state_f.read_text(encoding="utf-8")).get("keys", []))
+    new = {k: v for k, v in items.items() if k not in known}
+    if not new:
+        print("✅ لا جديد يحتاج إعلانًا.")
+        return
+    groups = {}
+    for y, sid, kind, it in new.values():
+        groups.setdefault((y, sid, kind), []).append(it)
+    nf = root / "notifications.json"
+    data = json.loads(nf.read_text(encoding="utf-8-sig")) if nf.is_file() else []
+    last = max([int(re.sub(r"\D", "", str(x.get("id", "0"))) or 0) for x in data] + [0])
+    today = datetime.date.today().isoformat()
+    made = []
+    for (y, sid, kind), its in sorted(groups.items()):
+        last += 1
+        n = {"id": "n%03d" % last, "date": today}
+        n.update(_announcement(y, sid, kind, its))
+        made.append(n)
+    print("🔔 %d إشعارًا جديدًا (لـ %d عنصرًا):" % (len(made), len(new)))
+    for n in made:
+        print("   %s  [%s]  %s" % (n["id"], n["year"], n["title"]))
+    if getattr(a, "dry_run", False):
+        print("(معاينة فقط: لم يُكتب شيء)")
+        return
+    data.extend(made)
+    nf.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    state_f.write_text(json.dumps({"keys": sorted(items)}, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    run_build(root)
+
+
 # ------------------------------------------------------------------ check
 def cmd_check(a=None, root=ROOT):
     root = Path(root)
@@ -358,6 +439,10 @@ def main(argv=None):
             p.add_argument("--body")
             p.add_argument("--section")
             p.add_argument("--exam-year")
+    an = sub.add_parser("announce", help="ينشئ إشعارات تلقائية للمحتوى الجديد")
+    an.add_argument("--dry-run", action="store_true", help="معاينة بلا كتابة")
+    an.add_argument("--baseline", action="store_true", help="سجّل الحالي كمُعلَن عنه بلا إشعارات")
+    an.add_argument("--no-build", action="store_true")
     u = sub.add_parser("unnotify", help="حذف إشعار برقمه (مثل n002)")
     u.add_argument("id")
     u.add_argument("--no-build", action="store_true")
@@ -366,7 +451,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
     try:
         res = {"pdf": cmd_pdf, "video": cmd_video, "notify": cmd_notify,
-               "fix-videos": cmd_fix_videos, "unnotify": cmd_unnotify,
+               "fix-videos": cmd_fix_videos, "unnotify": cmd_unnotify, "announce": cmd_announce,
                "check": lambda a: cmd_check(a)}[a.cmd](a)
         if a.cmd == "check" and res:
             return 1
