@@ -81,7 +81,19 @@
       "id": "svt",
       "name": "علوم الطبيعة والحياة",
       "enabled": true,
-      "years": {}
+      "years": {
+        "s1": {
+          "lessons": [],
+          "summaries": [],
+          "exams": [
+            {
+              "title": "1 tm 2017 sciences",
+              "url": "content/secondary/s1/svt/exams/1tm2017-sciences.pdf",
+              "year": 2017
+            }
+          ]
+        }
+      }
     },
     {
       "id": "physics_tech",
@@ -126,13 +138,6 @@
         "section": "exams",
         "exam_year": 2017
       }
-    },
-    {
-      "id": "n002",
-      "date": "2026-11-16",
-      "title": "تحديث جديد للتطبيق",
-      "body": "اضغط لتحميل النسخة الجديدة",
-      "url": "https://drive.google.com/..."
     }
   ]
 }
