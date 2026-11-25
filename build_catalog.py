@@ -93,7 +93,7 @@ def entries(stage, year, subject, section, warnings):
             low = n.lower()
             if low.endswith(".pdf"):
                 stem = os.path.splitext(n)[0]
-                e = {"title": title_of(stem), "url": rel_url("content", stage, year, subject, section, n)}
+                e: dict[str, object] = {"title": title_of(stem), "url": rel_url("content", stage, year, subject, section, n)}
                 y = year_of(stem)
                 if y:
                     e["year"] = y

@@ -5,13 +5,56 @@
       "id": "arabic",
       "name": "عربية",
       "enabled": true,
-      "years": {}
+      "years": {
+        "m1": {
+          "lessons": [
+            {
+              "title": "ملخص شامل لدروس اللغة العربية للفصل الأول",
+              "video": "https://www.youtube.com/watch?v=Lu8_UNCZpGw"
+            }
+          ],
+          "summaries": [],
+          "exams": []
+        },
+        "s3": {
+          "lessons": [],
+          "summaries": [],
+          "exams": [
+            {
+              "title": "عربية 2026",
+              "url": "content/secondary/s3/arabic/exams/arabe2026.pdf",
+              "year": 2026
+            },
+            {
+              "title": "عربية 2025",
+              "url": "content/secondary/s3/arabic/exams/arabe2025.pdf",
+              "year": 2025
+            }
+          ]
+        }
+      }
     },
     {
       "id": "math",
       "name": "رياضيات",
       "enabled": true,
       "years": {
+        "p1": {
+          "lessons": [],
+          "summaries": [],
+          "exams": [
+            {
+              "title": "dzexams 1 ap 2026 رياضيات",
+              "url": "content/primary/p1/math/exams/dzexams-1ap2026-mathematiques.pdf",
+              "year": 2026
+            },
+            {
+              "title": "dzexams 1 ap 2025 رياضيات",
+              "url": "content/primary/p1/math/exams/dzexams-1ap2025-mathematiques.pdf",
+              "year": 2025
+            }
+          ]
+        },
         "m1": {
           "lessons": [
             {
@@ -56,6 +99,17 @@
       "name": "فرنسية",
       "enabled": true,
       "years": {
+        "m1": {
+          "lessons": [],
+          "summaries": [],
+          "exams": [
+            {
+              "title": "dzexams 1 as 2026 فرنسية",
+              "url": "content/middle/m1/french/exams/dzexams-1as2026-francais.pdf",
+              "year": 2026
+            }
+          ]
+        },
         "s3": {
           "lessons": [],
           "summaries": [],
@@ -292,17 +346,6 @@
       "name": "علوم الطبيعة والحياة",
       "enabled": true,
       "years": {
-        "s1": {
-          "lessons": [],
-          "summaries": [],
-          "exams": [
-            {
-              "title": "1 tm 2017 sciences",
-              "url": "content/secondary/s1/svt/exams/1tm2017-sciences.pdf",
-              "year": 2017
-            }
-          ]
-        },
         "s3": {
           "lessons": [],
           "summaries": [],
@@ -340,6 +383,11 @@
               "title": "بكالوريا رياضيات physics 2025",
               "url": "content/secondary/s3/physics/exams/bac-math-physics-2025.pdf",
               "year": 2025
+            },
+            {
+              "title": "بكالوريا 2016 phys m tm",
+              "url": "content/secondary/s3/physics/exams/bac-2016-phys-m-tm.pdf",
+              "year": 2016
             }
           ]
         }
@@ -354,6 +402,16 @@
           "lessons": [],
           "summaries": [],
           "exams": [
+            {
+              "title": "اختبار philo 2024 3 as 3 tr",
+              "url": "content/secondary/s3/philosophy/exams/exam-philo2024-3as-3tr.pdf",
+              "year": 2024
+            },
+            {
+              "title": "اختبار philo 2024 3 as 2 tr",
+              "url": "content/secondary/s3/philosophy/exams/exam-philo2024-3as-2tr.pdf",
+              "year": 2024
+            },
             {
               "title": "اختبار philo 3 as 3 tr 2023",
               "url": "content/secondary/s3/philosophy/exams/exam-philo-3as-3tr2023.pdf",
