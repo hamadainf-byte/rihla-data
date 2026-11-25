@@ -1,0 +1,9 @@
+{
+  "version": "0.7.3",
+  "notes": "إصلاح فتح الروابط، وتحسين عارض الملفات، وفحص التحديث من مصدر أوثق، وتعديل مواضع الأيقونات.",
+  "apk": {
+    "arm64-v8a": "https://github.com/hamadainf-byte/rihla-data/releases/download/v0.7.3/rihla-taallum-arm64-v8a.apk",
+    "armeabi-v7a": "https://github.com/hamadainf-byte/rihla-data/releases/download/v0.7.3/rihla-taallum-armeabi-v7a.apk",
+    "x86_64": "https://github.com/hamadainf-byte/rihla-data/releases/download/v0.7.3/rihla-taallum-x86_64.apk"
+  }
+}

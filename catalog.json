@@ -5,34 +5,7 @@
       "id": "arabic",
       "name": "عربية",
       "enabled": true,
-      "years": {
-        "m1": {
-          "lessons": [
-            {
-              "title": "ملخص شامل لدروس اللغة العربية للفصل الأول",
-              "video": "https://www.youtube.com/watch?v=Lu8_UNCZpGw"
-            }
-          ],
-          "summaries": [],
-          "exams": []
-        },
-        "s3": {
-          "lessons": [],
-          "summaries": [],
-          "exams": [
-            {
-              "title": "عربية 2026",
-              "url": "content/secondary/s3/arabic/exams/arabe2026.pdf",
-              "year": 2026
-            },
-            {
-              "title": "عربية 2025",
-              "url": "content/secondary/s3/arabic/exams/arabe2025.pdf",
-              "year": 2025
-            }
-          ]
-        }
-      }
+      "years": {}
     },
     {
       "id": "math",
